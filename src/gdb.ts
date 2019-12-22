@@ -332,7 +332,11 @@ export class GDBDebugSession extends DebugSession {
                 this.miDebugger.printCalls = !!this.args.showDevDebugOutput;
                 this.miDebugger.debugOutput = !!this.args.showDevDebugOutput;
 
-                const commands = [`interpreter-exec console "source ${this.args.extensionPath}/support/gdbsupport.init"`];
+                //const commands = [`interpreter-exec console "source ${this.args.extensionPath}/support/gdbsupport.init"`];
+                const commands = [`interpreter-exec console "define EnableITMAccess"`];
+                //commands.push(`end`);
+                //commands.push(`interpreter-exec console "end"`);
+                
                 commands.push(...this.serverController.initCommands());
                 
                 if (attach) {
