@@ -659,7 +659,11 @@ export class MI2 extends EventEmitter implements IBackend {
             };
 
             if(command.includes('define')){
+                if(!command.includes('end')){
+                    this.log('stderr', `WARNING: Command contains "define", but no "end": '${command}'`);
+                }
                 this.sendRaw(sel + '-' + command);
+                
                 this.sendRaw('end');
                 return;
             }

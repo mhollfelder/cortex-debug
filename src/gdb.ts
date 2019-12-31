@@ -333,9 +333,17 @@ export class GDBDebugSession extends DebugSession {
                 this.miDebugger.debugOutput = !!this.args.showDevDebugOutput;
 
                 //const commands = [`interpreter-exec console "source ${this.args.extensionPath}/support/gdbsupport.init"`];
-                const commands = [`interpreter-exec console "define EnableITMAccess"`];
+                //const commands = [`interpreter-exec console "define EnableITMAccess"`];
                 //commands.push(`end`);
+                let commandFileBuffer = fs.readFileSync( this.args.extensionPath + '/support/gdbsupport.init', 'utf8');
+                // CLEAN: That's what it finally did: https://stackoverflow.com/a/12721916
+                // CLEAN: That's the rest: https://www.geeksforgeeks.org/how-to-remove-all-line-breaks-from-a-string-using-javascript/
+                let commandsFile = commandFileBuffer.replace(/[\r\n\t]+/gm, "\n" ).split(/(?<=end)/);
+                commandsFile.forEach(function (currentValue, index, array) {
+                    array[index] = array[index].replace(/^\n/, "")
+                  });
                 //commands.push(`interpreter-exec console "end"`);
+                const commands = [];
                 
                 commands.push(...this.serverController.initCommands());
                 
