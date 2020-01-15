@@ -185,8 +185,8 @@ export class GDBDebugSession extends DebugSession {
 
     private normalizeArguments(args: ConfigurationArguments): ConfigurationArguments {
         args.graphConfig = args.graphConfig || [];
-        
-        if (args.executable && !path.isAbsolute(args.executable)) {
+
+        if (args.executable && !path.isAbsolute(args.executable) && !args.toolchainDockerCommand) {
             args.executable = path.normalize(path.join(args.cwd, args.executable));
         }
 
