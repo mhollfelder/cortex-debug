@@ -104,6 +104,8 @@ export class CortexDebugConfigurationProvider implements vscode.DebugConfigurati
         if (os.platform() === 'win32') {
             config.extensionPath = config.extensionPath.replace(/\\/g, '/'); // GDB doesn't interpret the path correctly with backslashes.
         }
+
+        if (config.armToolchainDockerCommand) { config.toolchainDockerCommand = config.armToolchainDockerCommand; }
         
         if (validationResponse) {
             vscode.window.showErrorMessage(validationResponse);
