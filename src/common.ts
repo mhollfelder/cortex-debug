@@ -86,6 +86,7 @@ export interface SWOConfiguration {
 export interface ConfigurationArguments extends DebugProtocol.LaunchRequestArguments {
     toolchainPath: string;
     toolchainPrefix: string;
+    toolchainDockerCommand : string;
     executable: string;
     servertype: string;
     serverpath: string;

@@ -807,6 +807,11 @@
                                 "description": "This setting can be used to override the armToolchainPath user setting for a particular launch configuration. This should be the path where arm-none-eabi-gdb and arm-none-eabi-objdump are located.",
                                 "type": "string"
                             },
+                            "armToolchainDockerCommand": {
+                                "default": null,
+                                "description": "The Docker command to use if the Arm toolchain is deployed in a Docker instance.",
+                                "type": "string"
+                            },
                             "toolchainPrefix": {
                                 "default": null,
                                 "description": "This setting can be used to override the toolchainPrefix user setting for a particular launch configuration.",
