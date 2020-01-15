@@ -266,6 +266,14 @@ export class GDBDebugSession extends DebugSession {
                         'Please configure "armToolchainDockerCommand" correctly.'
                     );
                 }
+                if (!this.args.gdbTarget){
+                    this.sendErrorResponse(
+                        response,
+                        103,
+                        `${this.serverController.name} GDB target was not found or specified, but Docker should be used as "armToolchainDockerCommand" is defined.\n` +
+                            'Please configure "gdbTarget" correctly if you want to use Docker or remove "armToolchainDockerCommand".'
+                    );        
+                }
             }
             if (this.args.toolchainPath && !this.args.toolchainDockerCommand) {
                 gdbExePath = path.normalize(path.join(this.args.toolchainPath, gdbExePath));
