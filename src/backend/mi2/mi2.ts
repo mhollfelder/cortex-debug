@@ -376,7 +376,7 @@ export class MI2 extends EventEmitter implements IBackend {
                     }
                     else if (parseInt(match) !== 0) {
                         location += '-t -i ' + parseInt(match) + ' ';
-                         }
+                    }
                 }
             }
 
@@ -564,7 +564,7 @@ export class MI2 extends EventEmitter implements IBackend {
 
         let result = createResp.result('');
         if (overrideVal) {
-            result = result.map((r: string[]) => r[0] === 'value' ?  ['value', overrideVal] : r);
+            result = result.map((r: string[]) => r[0] === 'value' ? ['value', overrideVal] : r);
         }
         return new VariableObject(result);
     }
@@ -658,17 +658,21 @@ export class MI2 extends EventEmitter implements IBackend {
                 }
             };
 
-            if(command.includes('define')){
-                if(!command.includes('end')){
-                    this.log('stderr', `WARNING: Command contains "define", but no "end": '${command}'`);
+            if (command.includes('def')) {
+                if (!command.includes('end')) {
+                    this.log('stderr', `WARNING: Parsed command from source file contains "def" recognized as "define", but no command "end", which would block the debugger: '${command}'`);
+                    return;
                 }
+                command.split(/[\n]+/gm).forEach(function (currentValue, index, array) {
+                    if (index == 0) {
+                        this.sendRaw(sel + '-' + `interpreter-exec console "${currentValue.trim()}"`);
+                    } else {
+                        this.sendRaw(currentValue.trim());
+                    };
+                }, this);
+            } else {
                 this.sendRaw(sel + '-' + command);
-                
-                this.sendRaw('end');
-                return;
             }
-
-            this.sendRaw(sel + '-' + command);
         });
     }
 
