@@ -1240,7 +1240,8 @@ export class GDBDebugSession extends DebugSession {
             const ret: StackFrame[] = [];
             for (const element of stack) {
                 const stackId = GDBDebugSession.encodeReference(args.threadId, element.level);
-                const file = element.file;
+                // CLEAN: Comment this change: parse correct filename from GDB running in Docker
+                const file = this.args.toolchainDockerCommand ? path.normalize(path.join(this.args.cwd, element.fileName)) : element.file;
                 let disassemble = this.forceDisassembly || !file;
                 if (!disassemble) { disassemble = !(await this.checkFileExists(file)); }
                 if (!disassemble && this.activeEditorPath && this.activeEditorPath.startsWith('disassembly:///')) {
@@ -1375,9 +1376,10 @@ export class GDBDebugSession extends DebugSession {
 
         try {
             const frame = await this.miDebugger.getFrame(threadId, frameId);
-            const file = frame.fileName;
+            // CLEAN: Comment this change: parse correct filename from GDB running in Docker
+            const file = this.args.toolchainDockerCommand ? path.normalize(path.join(this.args.cwd, frame.fileName)) : frame.fileName;
             const staticSymbols = this.symbolTable.getStaticVariables(file);
-            
+
             for (const symbol of staticSymbols) {
                 const varObjName = `${file}_static_var_${symbol.name}`;
                 let varObj: VariableObject;
