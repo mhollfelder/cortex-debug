@@ -207,7 +207,7 @@ export class GDBDebugSession extends DebugSession {
     }
 
     private processLaunchAttachRequest(response: DebugProtocol.LaunchResponse, attach: boolean) {
-        if (!fs.existsSync(this.args.executable)) {
+        if (!fs.existsSync(this.args.executable) && !this.args.toolchainDockerCommand) {
             this.sendErrorResponse(
                 response,
                 103,
