@@ -242,21 +242,48 @@ export class GDBDebugSession extends DebugSession {
             const args = this.serverController.serverArguments();
 
             let gdbExePath = os.platform() !== 'win32' ? `${this.args.toolchainPrefix}-gdb` : `${this.args.toolchainPrefix}-gdb.exe`;
-            if (this.args.toolchainPath) {
+            let gdbAddParaDocker;
+            if (this.args.toolchainDockerCommand) {
+                if (this.args.toolchainDockerCommand.includes('docker')) {
+                    let buffer = this.args.toolchainDockerCommand.includes('docker.exe') ? this.args.toolchainDockerCommand.split(/(?<=docker\.exe)/) : this.args.toolchainDockerCommand.split(/(?<=docker)/);
+                    if (buffer[0].includes('docker')) {
+                        gdbExePath = buffer[0];
+                        gdbAddParaDocker = buffer[1].match(RegExp(/([^\s'"]([^\s'"]*(['"])([^\3]*?)\3)+[^\s'"]*)|[^\s'"]+|(['"])([^\5]*?)\5/gi));
+                    } else {
+                        this.sendErrorResponse(
+                            response,
+                            103,
+                            `${this.serverController.name} Docker command was not found in "${this.args.toolchainDockerCommand}" "${buffer[0]}" as first argument.\n` +
+                            'Please configure "armToolchainDockerCommand" correctly.'
+                        );
+                    }
+                }
+                else {
+                    this.sendErrorResponse(
+                        response,
+                        103,
+                        `${this.serverController.name} Docker command was not found in "${this.args.toolchainDockerCommand}".\n` +
+                        'Please configure "armToolchainDockerCommand" correctly.'
+                    );
+                }
+            }
+            if (this.args.toolchainPath && !this.args.toolchainDockerCommand) {
                 gdbExePath = path.normalize(path.join(this.args.toolchainPath, gdbExePath));
             }
-            if (this.args.gdbpath) {
-                gdbExePath = this.args.gdbpath;
+            else {
+                gdbExePath = path.normalize(gdbExePath);
             }
 
-            // Check to see if gdb exists.
+            // Check to see if gdb (or docker) exists.
+            let messageGdbExe = gdbExePath.includes("docker") ? "Docker executable" : "GDB executable";
+            let messageOption = gdbExePath.includes("docker") ? "cortex-debug.armDockerToolchainPath" : "cortex-debug.armToolchainPath";
             if (path.isAbsolute(gdbExePath)) {
                 if (fs.existsSync(gdbExePath) === false) {
                     this.sendErrorResponse(
                         response,
                         103,
-                        `${this.serverController.name} GDB executable "${gdbExePath}" was not found.\n` +
-                            'Please configure "cortex-debug.armToolchainPath" correctly.'
+                        `${this.serverController.name} "${messageGdbExe}" "${gdbExePath}" was not found.\n` +
+                        `Please configure "${messageOption}" correctly.`
                     );
                     return;
                 }
@@ -266,8 +293,8 @@ export class GDBDebugSession extends DebugSession {
                     this.sendErrorResponse(
                         response,
                         103,
-                        `${this.serverController.name} GDB executable "${gdbExePath}" was not found.\n` +
-                            'Please configure "cortex-debug.armToolchainPath" correctly.'
+                        `${this.serverController.name} "${messageGdbExe}" "${gdbExePath}" was not found.\n` +
+                        `Please configure "${messageOption}" correctly.`
                     );
                     return;
                 }
