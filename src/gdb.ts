@@ -349,8 +349,8 @@ export class GDBDebugSession extends DebugSession {
                 }
 
                 this.serverController.serverLaunchCompleted();
-                
-                let gdbargs = ['-q', '--interpreter=mi2'];
+
+                let gdbargs =  gdbAddParaDocker ? gdbAddParaDocker.concat(['-q', '--interpreter=mi2']) : ['-q', '--interpreter=mi2'];
                 gdbargs = gdbargs.concat(this.args.debuggerArgs || []);
 
                 this.miDebugger = new MI2(gdbExePath, gdbargs);
