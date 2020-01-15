@@ -42,7 +42,7 @@ export class MI2 extends EventEmitter implements IBackend {
     }
 
     public connect(cwd: string, executable: string, commands: string[]): Thenable<any> {
-        if (!nativePath.isAbsolute(executable)) {
+        if (!nativePath.isAbsolute(executable) && !this.application.includes('docker')) {
             executable = nativePath.join(cwd, executable);
         }
             
