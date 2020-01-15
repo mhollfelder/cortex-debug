@@ -33,9 +33,15 @@ export class OpenOCDServerController extends EventEmitter implements GDBServerCo
     public initCommands(): string[] {
         const gdbport = this.ports['gdbPort'];
 
-        return [
-            `target-select extended-remote localhost:${gdbport}`
-        ];
+        if(this.args.toolchainDockerCommand){
+            return [
+                `target-select extended-remote ${this.args.gdbTarget}:${gdbport}`
+                ];
+        } else {
+            return [
+                `target-select extended-remote localhost:${gdbport}`
+                ];
+        }
     }
 
     public launchCommands(): string[] {
